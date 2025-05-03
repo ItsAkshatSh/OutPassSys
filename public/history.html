@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - Out Pass System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Out Pass System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="history.html">History</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Out Pass History</h5>
+            </div>
+            <div class="card-body">
+                <form id="searchForm" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="search" class="form-label">Search by Student Name</label>
+                                <input type="text" class="form-control" id="search" placeholder="Enter student name">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary w-100">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Grade</th>
+                                <th>Reason</th>
+                                <th>Time</th>
+                                <th>Created At</th>
+                                <th>Closed At</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load history
+        async function loadHistory() {
+            try {
+                const search = document.getElementById('search').value;
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+
+                let url = '/api/tickets/history?';
+                if (search) url += `search=${encodeURIComponent(search)}&`;
+                if (startDate) url += `startDate=${encodeURIComponent(startDate)}&`;
+                if (endDate) url += `endDate=${encodeURIComponent(endDate)}`;
+
+                const response = await fetch(url);
+                const tickets = await response.json();
+                const historyList = document.getElementById('historyList');
+                historyList.innerHTML = '';
+
+                tickets.forEach(ticket => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${ticket.studentName}</td>
+                        <td>${ticket.grade}</td>
+                        <td>${ticket.reason}</td>
+                        <td>${ticket.time}</td>
+                        <td>${new Date(ticket.created_at).toLocaleString()}</td>
+                        <td>${new Date(ticket.closed_at).toLocaleString()}</td>
+                    `;
+                    historyList.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading history:', error);
+            }
+        }
+
+        // Search form submission
+        document.getElementById('searchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            loadHistory();
+        });
+
+        // Initial load
+        loadHistory();
+    </script>
+</body>
+</html> 
