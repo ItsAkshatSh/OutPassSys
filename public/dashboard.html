@@ -1,162 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Out Pass System</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overview — Outpass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="#">Out Pass System</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="dashboard.html">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="history.html">History</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  <div class="noise" aria-hidden="true"></div>
 
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Create New Out Pass</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="ticketForm">
-                            <div class="mb-3">
-                                <label for="studentName" class="form-label">Student Name</label>
-                                <input type="text" class="form-control" id="studentName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="grade" class="form-label">Grade</label>
-                                <input type="text" class="form-control" id="grade" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="reason" class="form-label">Reason</label>
-                                <textarea class="form-control" id="reason" rows="3" required></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="time" class="form-label">Time</label>
-                                <input type="time" class="form-control" id="time" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Create Out Pass</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Active Out Passes</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Student Name</th>
-                                        <th>Grade</th>
-                                        <th>Reason</th>
-                                        <th>Time</th>
-                                        <th>Created At</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="ticketList"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="dashboard.html" aria-label="Outpass home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </span>
+        <span class="brand-name">outpass<span class="brand-dot">.</span></span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <p class="nav-label">Workspace</p>
+        <a class="nav-item is-active" href="dashboard.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          Overview
+        </a>
+        <a class="nav-item" href="history.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg>
+          History
+          <span class="badge" id="navCount">0</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="gate-card">
+          <p class="gate-label">System status</p>
+          <p class="gate-state"><span class="pulse" id="apiPulse"></span><span id="apiStatus">Connecting…</span></p>
         </div>
+        <div class="user-card">
+          <span class="avatar">WD</span>
+          <span class="user-meta">
+            <span class="user-name">Teacher</span>
+            <span class="user-role">Hostel admin</span>
+          </span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+
+        <div class="crumb">
+          <span>Hostel admin</span>
+          <span class="crumb-sep">/</span>
+          <strong>Overview</strong>
+        </div>
+
+        <div class="topbar-right">
+          <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+            <input id="searchInput" type="text" placeholder="Search active outpasses…" aria-label="Search active outpasses">
+            <kbd>⌘K</kbd>
+          </div>
+          <button class="btn btn-accent" id="newRequestBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            New outpass
+          </button>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="page-head fade-up">
+          <div>
+            <p class="eyebrow" id="todayLabel">Monday · 24 Nov 2026</p>
+            <p class="sub" id="headline">Checking the gate activity for today.</p>
+          </div>
+          <div class="page-head-actions">
+            <a class="btn btn-ghost" href="history.html">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg>
+              View history
+            </a>
+          </div>
+        </section>
+
+        <section class="stats fade-up d1">
+          <article class="stat stat--accent">
+            <div class="stat-top">
+              <span class="stat-label">Active outpasses</span>
+              <span class="stat-icon stat-icon--lime">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v14"/><path d="M16 12h3a1 1 0 0 1 1 1v7M2 20h20"/></svg>
+              </span>
+            </div>
+            <p class="stat-value"><span id="statActive">—</span><span class="stat-unit">students</span></p>
+            <p class="stat-foot"><span class="dot dot--lime"></span><span id="activeFoot">Loading live passes…</span></p>
+          </article>
+
+          <article class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Issued this week</span>
+              <span class="stat-icon stat-icon--blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4Z"/><path d="M13 5v14" stroke-dasharray="2 3"/></svg>
+              </span>
+            </div>
+            <p class="stat-value"><span id="statWeek">—</span><span class="stat-unit">passes</span></p>
+            <p class="stat-foot"><span class="dot dot--amber"></span>Last 7 days</p>
+          </article>
+
+          <article class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Returned</span>
+              <span class="stat-icon stat-icon--amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              </span>
+            </div>
+            <p class="stat-value"><span id="statReturned">—</span><span class="stat-unit">total</span></p>
+            <p class="stat-foot"><span class="dot dot--lime"></span><span id="returnedFoot">All-time check-ins</span></p>
+          </article>
+
+          <article class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Students tracked</span>
+              <span class="stat-icon stat-icon--rose">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13A4 4 0 0 1 16 11"/></svg>
+              </span>
+            </div>
+            <p class="stat-value"><span id="statStudents">—</span><span class="stat-unit">unique</span></p>
+            <p class="stat-foot"><span class="dot"></span>Across all grades</p>
+          </article>
+        </section>
+
+        <section class="grid-main fade-up d2">
+          <div class="card table-card">
+            <div class="card-head">
+              <div>
+                <h2>Active outpasses</h2>
+                <p class="card-sub">Students currently outside campus</p>
+              </div>
+              <div class="card-tools">
+                <span class="chip"><span class="dot"></span><span id="activeChip">0 out</span></span>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table id="activeTable">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Grade</th>
+                    <th>Reason</th>
+                    <th>Return by</th>
+                    <th>Issued</th>
+                    <th class="th-actions" aria-label="Actions"></th>
+                  </tr>
+                </thead>
+                <tbody id="activeRows"></tbody>
+              </table>
+
+              <div class="empty" id="activeEmpty" hidden>
+                <span class="empty-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v14"/><path d="M16 12h3a1 1 0 0 1 1 1v7M2 20h20"/></svg>
+                </span>
+                <strong>No one is outside right now</strong>
+                <span id="emptyHint">Every student is on campus. New outpasses will show up here.</span>
+                <button class="btn btn-ghost btn-sm" type="button" id="emptyNewBtn">Create an outpass</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="side-col">
+            <div class="card chart-card">
+              <div class="card-head">
+                <div>
+                  <h2>Outpass volume</h2>
+                  <p class="card-sub" id="chartSub">Last 7 days</p>
+                </div>
+                <span class="chip" id="chartTotal">0 passes</span>
+              </div>
+              <div class="chart">
+                <div class="chart-bars" id="chartBars"></div>
+                <div class="chart-days" aria-hidden="true">
+                  <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                </div>
+              </div>
+              <div class="chart-foot">
+                <span>Peak day <strong id="peakDay">—</strong></span>
+                <span id="chartRange">—</span>
+              </div>
+            </div>
+
+            <div class="card activity-card">
+              <div class="card-head">
+                <h2>Recent activity</h2>
+                <a class="link" href="history.html">View history</a>
+              </div>
+              <ul class="activity" id="activityList">
+                <li class="list-empty">Nothing yet — activity appears as passes are issued and closed.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
+  </div>
 
-    <script>
-        async function loadTickets() {
-            try {
-                const response = await fetch('/api/tickets/active');
-                const tickets = await response.json();
-                const ticketList = document.getElementById('ticketList');
-                ticketList.innerHTML = '';
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
-                tickets.forEach(ticket => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${ticket.studentName}</td>
-                        <td>${ticket.grade}</td>
-                        <td>${ticket.reason}</td>
-                        <td>${ticket.time}</td>
-                        <td>${new Date(ticket.created_at).toLocaleString()}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" onclick="closeTicket(${ticket.id})">Close</button>
-                        </td>
-                    `;
-                    ticketList.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading tickets:', error);
-            }
-        }
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <div>
+          <h3 id="modalTitle">New outpass</h3>
+          <p class="card-sub">A pass is active immediately after it is created.</p>
+        </div>
+        <button class="icon-btn" id="closeModal" type="button" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
 
-        document.getElementById('ticketForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const studentName = document.getElementById('studentName').value;
-            const grade = document.getElementById('grade').value;
-            const reason = document.getElementById('reason').value;
-            const time = document.getElementById('time').value;
+      <form id="requestForm" autocomplete="off">
+        <div class="form-grid">
+          <label class="field">
+            <span>Student name</span>
+            <input name="studentName" type="text" required placeholder="e.g. Akshat Sharma">
+          </label>
+          <label class="field">
+            <span>Grade</span>
+            <input name="grade" type="text" required placeholder="e.g. 11H">
+          </label>
+          <label class="field field--full">
+            <span>Reason</span>
+            <input name="reason" type="text" required placeholder="MUN, medical, going home…">
+          </label>
+          <label class="field field--full">
+            <span>Expected return time</span>
+            <input name="time" type="time" required id="returnTime">
+          </label>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" id="cancelModal" type="button">Cancel</button>
+          <button class="btn btn-accent" type="submit" id="submitBtn">Create outpass</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-            try {
-                const response = await fetch('/api/tickets', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ studentName, grade, reason, time })
-                });
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 
-                if (response.ok) {
-                    document.getElementById('ticketForm').reset();
-                    loadTickets();
-                } else {
-                    alert('Error creating out pass');
-                }
-            } catch (error) {
-                alert('Error creating out pass');
-            }
-        });
-
-        async function closeTicket(ticketId) {
-            try {
-                const response = await fetch(`/api/tickets/${ticketId}/close`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    loadTickets();
-                } else {
-                    alert('Error closing out pass');
-                }
-            } catch (error) {
-                alert('Error closing out pass');
-            }
-        }
-
-        loadTickets();
-    </script>
+  <script src="ui.js"></script>
+  <script src="dashboard.js"></script>
 </body>
-</html> 
+</html>

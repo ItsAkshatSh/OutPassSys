@@ -119,8 +119,12 @@ app.put('/api/tickets/:id/close', (req, res) => {
     );
 });
 
+app.get('/', (req, res) => {
+    res.redirect('/dashboard.html');
+});
+
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    console.log(`\nOpen http://localhost:${PORT}/dashboard.html in your browser`);
+    console.log(`\nOpen http://localhost:${PORT} in your browser`);
 }); 

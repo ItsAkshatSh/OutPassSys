@@ -1,128 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>History - Out Pass System</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History — Outpass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="#">Out Pass System</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="dashboard.html" aria-label="Outpass home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </span>
+        <span class="brand-name">outpass<span class="brand-dot">.</span></span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <p class="nav-label">Workspace</p>
+        <a class="nav-item" href="dashboard.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          Overview
+        </a>
+        <a class="nav-item is-active" href="history.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg>
+          History
+          <span class="badge" id="navCount">0</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="gate-card">
+          <p class="gate-label">System status</p>
+          <p class="gate-state"><span class="pulse" id="apiPulse"></span><span id="apiStatus">Connecting…</span></p>
+        </div>
+        <div class="user-card">
+          <span class="avatar">WD</span>
+          <span class="user-meta">
+            <span class="user-name">Teacher</span>
+            <span class="user-role">Hostel admin</span>
+          </span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+
+        <div class="crumb">
+          <span>Hostel admin</span>
+          <span class="crumb-sep">/</span>
+          <strong>History</strong>
+        </div>
+
+        <div class="topbar-right">
+          <a class="btn btn-ghost" href="dashboard.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            Overview
+          </a>
+          <a class="btn btn-accent" href="dashboard.html#new">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            New outpass
+          </a>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="page-head fade-up">
+          <div>
+            <p class="eyebrow" id="todayLabel">Archive</p>
+            <h1>Outpass history</h1>
+            <p class="sub" id="headline">Every returned pass, searchable by student and date.</p>
+          </div>
+          <div class="page-head-actions">
+            <button class="btn btn-ghost" type="button" id="exportBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg>
+              Export CSV
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="dashboard.html">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="history.html">History</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+          </div>
+        </section>
 
-    <div class="container mt-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Out Pass History</h5>
+        <section class="stats fade-up d1">
+          <article class="stat stat--accent">
+            <div class="stat-top">
+              <span class="stat-label">Total outpasses</span>
+              <span class="stat-icon stat-icon--lime">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4Z"/><path d="M13 5v14" stroke-dasharray="2 3"/></svg>
+              </span>
             </div>
-            <div class="card-body">
-                <form id="searchForm" class="mb-4">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="search" class="form-label">Search by Student Name</label>
-                                <input type="text" class="form-control" id="search" placeholder="Enter student name">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="mb-3">
-                                <label for="startDate" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="startDate">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="mb-3">
-                                <label for="endDate" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="endDate">
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="mb-3">
-                                <label class="form-label">&nbsp;</label>
-                                <button type="submit" class="btn btn-primary w-100">Search</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+            <p class="stat-value"><span id="statTotal">—</span><span class="stat-unit">records</span></p>
+            <p class="stat-foot"><span class="dot dot--lime"></span>Matched by current filters</p>
+          </article>
 
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Student Name</th>
-                                <th>Grade</th>
-                                <th>Reason</th>
-                                <th>Time</th>
-                                <th>Created At</th>
-                                <th>Closed At</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyList"></tbody>
-                    </table>
-                </div>
+          <article class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Returned this week</span>
+              <span class="stat-icon stat-icon--blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg>
+              </span>
             </div>
-        </div>
+            <p class="stat-value"><span id="statWeek">—</span><span class="stat-unit">passes</span></p>
+            <p class="stat-foot"><span class="dot dot--amber"></span>Last 7 days</p>
+          </article>
+
+          <article class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Unique students</span>
+              <span class="stat-icon stat-icon--amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13A4 4 0 0 1 16 11"/></svg>
+              </span>
+            </div>
+            <p class="stat-value"><span id="statStudents">—</span><span class="stat-unit">people</span></p>
+            <p class="stat-foot"><span class="dot"></span>In this result set</p>
+          </article>
+
+          <article class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Top grade</span>
+              <span class="stat-icon stat-icon--rose">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>
+              </span>
+            </div>
+            <p class="stat-value"><span id="statGrade">—</span><span class="stat-unit">most passes</span></p>
+            <p class="stat-foot"><span class="dot"></span>By outpass count</p>
+          </article>
+        </section>
+
+        <section class="card fade-up d2">
+          <div class="card-head">
+            <div>
+              <h2>All returned passes</h2>
+              <p class="card-sub" id="resultSub">Loading records…</p>
+            </div>
+            <span class="chip"><span class="dot"></span>Closed</span>
+          </div>
+
+          <form class="filters" id="searchForm">
+            <label class="field">
+              <span>Student name</span>
+              <input id="search" type="text" placeholder="Search by name…">
+            </label>
+            <label class="field">
+              <span>From</span>
+              <input id="startDate" type="date">
+            </label>
+            <label class="field">
+              <span>To</span>
+              <input id="endDate" type="date">
+            </label>
+            <div class="filter-actions">
+              <button class="btn btn-accent" type="submit">Apply</button>
+              <button class="btn btn-ghost" type="button" id="resetBtn">Reset</button>
+            </div>
+          </form>
+
+          <div class="table-wrap">
+            <table id="historyTable">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Grade</th>
+                  <th>Reason</th>
+                  <th>Return by</th>
+                  <th>Issued</th>
+                  <th>Returned</th>
+                </tr>
+              </thead>
+              <tbody id="historyRows"></tbody>
+            </table>
+
+            <div class="empty" id="historyEmpty" hidden>
+              <span class="empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg>
+              </span>
+              <strong>No records found</strong>
+              <span id="emptyHint">Once a pass is closed it is archived here. Try clearing the filters.</span>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
+  </div>
 
-    <script>
-        // Load history
-        async function loadHistory() {
-            try {
-                const search = document.getElementById('search').value;
-                const startDate = document.getElementById('startDate').value;
-                const endDate = document.getElementById('endDate').value;
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 
-                let url = '/api/tickets/history?';
-                if (search) url += `search=${encodeURIComponent(search)}&`;
-                if (startDate) url += `startDate=${encodeURIComponent(startDate)}&`;
-                if (endDate) url += `endDate=${encodeURIComponent(endDate)}`;
-
-                const response = await fetch(url);
-                const tickets = await response.json();
-                const historyList = document.getElementById('historyList');
-                historyList.innerHTML = '';
-
-                tickets.forEach(ticket => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${ticket.studentName}</td>
-                        <td>${ticket.grade}</td>
-                        <td>${ticket.reason}</td>
-                        <td>${ticket.time}</td>
-                        <td>${new Date(ticket.created_at).toLocaleString()}</td>
-                        <td>${new Date(ticket.closed_at).toLocaleString()}</td>
-                    `;
-                    historyList.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading history:', error);
-            }
-        }
-
-        // Search form submission
-        document.getElementById('searchForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            loadHistory();
-        });
-
-        // Initial load
-        loadHistory();
-    </script>
+  <script src="ui.js"></script>
+  <script src="history.js"></script>
 </body>
-</html> 
+</html>
